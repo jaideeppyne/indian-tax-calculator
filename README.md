@@ -35,6 +35,9 @@ This app can be deployed to Cloudflare Pages Free.
 
 - Build command: `npm run build`
 - Build output directory: `dist`
+- Deploy command: leave blank for normal Pages Git deployments, or use `npx wrangler pages deploy dist --project-name=indian-tax-calculator`
+
+Do not use `npx wrangler deploy` unless you intentionally deploy this as a Workers Static Assets project.
 
 Direct deploy:
 
