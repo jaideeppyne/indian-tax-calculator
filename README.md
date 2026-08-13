@@ -48,3 +48,14 @@ npm run deploy:cloudflare
 ## Notes
 
 This is a planning calculator, not tax advice. Verify outputs against the Income Tax Department utility, AIS/TIS/Form 26AS, and a qualified tax professional before filing.
+
+The engine keeps special-rate income separate from slab income. For AY 2026-27,
+the new-regime Section 87A rebate is limited to tax payable at the Section
+115BAC(1A) slab rates, and a loss from one VDA transfer is not netted against a
+profitable VDA transfer.
+
+Rule references:
+
+- Income Tax Department, [special regimes and the AY 2026-27 Section 87A limit](https://www.incometaxindia.gov.in/w/special-regimes-for-taxation-of-individuals-huf-aop-boi-ajp-companies-and-co-operative-societies)
+- Income Tax Department, [Section 115BBH](https://www.incometaxindia.gov.in/w/section-115bbh-5)
+- Income Tax Department, [Schedule VDA transaction-wise reporting](https://www.incometaxindia.gov.in/w/schedule_vda)

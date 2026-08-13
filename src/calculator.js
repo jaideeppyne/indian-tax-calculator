@@ -83,7 +83,10 @@ const computeCapitalGains = (rows, equityCompGain, ruleYear) => {
     const gain = toNumber(row.saleValue) - toNumber(row.costBasis) - toNumber(row.expenses);
     if (row.type.includes("STCG 111A")) totals.stcg111a += gain;
     else if (row.type.includes("LTCG 112A")) totals.ltcg112a += gain;
-    else if (row.type.includes("VDA")) totals.vda += gain;
+    // Section 115BBH(2)(b) does not permit a loss from one VDA transfer to
+    // reduce income from another transfer. Aggregate profitable VDA rows only;
+    // losing rows remain non-deductible and cannot be carried forward.
+    else if (row.type.includes("VDA")) totals.vda += Math.max(gain, 0);
     else if (row.holdingPeriod === "Long term") totals.otherLongTerm += gain;
     else totals.otherShortTerm += gain;
   });
@@ -173,7 +176,12 @@ export const calculateTax = (data, regime) => {
   const beforeRebate = slabTax + specialRateTax;
   const rebateLimit = regime === "new" ? ruleYear.newRegimeRebateLimit : ruleYear.oldRegimeRebateLimit;
   const rebateAmount = regime === "new" ? ruleYear.newRegimeRebateAmount : ruleYear.oldRegimeRebateAmount;
-  const rebate = taxableIncome <= rebateLimit ? Math.min(beforeRebate, rebateAmount) : 0;
+  // From AY 2026-27, the new-regime Section 87A rebate is limited to tax
+  // payable at the rates in Section 115BAC(1A), so it cannot erase the
+  // separately computed special-rate component. Keep the existing old-regime
+  // treatment here; its special-rate restrictions are not identical.
+  const rebateEligibleTax = regime === "new" ? slabTax : beforeRebate;
+  const rebate = taxableIncome <= rebateLimit ? Math.min(rebateEligibleTax, rebateAmount) : 0;
   const afterRebate = Math.max(0, beforeRebate - rebate);
   const surcharge = afterRebate * computeSurchargeRate(taxableIncome);
   const cess = (afterRebate + surcharge) * ruleYear.cessRate;
